@@ -32,10 +32,6 @@ Process* processCreate(int pid, int ppid, int arrivalTime, int burstTime, int* i
   p->arrivalTime = arrivalTime;
   p->burstTime = burstTime;
   p->priority = 0;
-  p->io = (int*) malloc(sizeof(int) * p->burstTime);
-  int i=0;
-  for(i = 0; i < p->burstTime; i++)
-    p->io[i] = io[i];
   p->io = io;
   p->current_io = 0;
   p->t_io = 0;
