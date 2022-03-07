@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "functions.h"
+
 #define TOTAL_PROCESSOS 5
 #define QUANTUM 3
 
 int t=0;
 
+// Executa o prÃ³ximo processo dado um queueIndex. Retorna "true" caso seja executado e "false" caso haja erro
 bool executeProcess(Queue** q, Process** po, int queueIndex) {
    if(queueIndex == -1) {
     printQueue(q);
@@ -16,9 +18,9 @@ bool executeProcess(Queue** q, Process** po, int queueIndex) {
     }
     return true;
   }
-	
+
   printQueue(q);
-  
+
   Process* p = removeProcessInQueue(q[queueIndex]);
   p->status = "executando";
   bool went_io = false;
@@ -29,7 +31,7 @@ bool executeProcess(Queue** q, Process** po, int queueIndex) {
       executeIo(q,po);
       continue;
     }
-    // check if io op now
+    // Checa se existe operaÃ§Ã£o de I/O
     if(p->io[p->t] != -1 && p->t < p->burstTime) {
       p->status = "aguardando";
       p->t_io = 4;
@@ -44,20 +46,19 @@ bool executeProcess(Queue** q, Process** po, int queueIndex) {
     executeIo(q,po);
     t++;
   }
-  printf("scheduled proc: %5d, service time left: %3d\n\n",
-         p->pid, p->burstTime - p->t);
+  printf("Tempo de serviÃ§o restante: %3d\n\n",p->burstTime - p->t);
 
-  // if done executing
+  // Caso termine de executar
   if(p->t == p->burstTime) return true;
 
   if(!went_io && p->current_io == 0 && !addProcessInQueue(q[p->priority], p)) {
-    // should't happen
-    printf("error: can't push to queue %d!\n", queueIndex);
+    // Caso um erro seja encontrado
+    printf("Erro: nÃ£o Ã© possÃ­vel adicionar Ã  fila %d!\n", queueIndex);
     return false;
   }
   if(p->current_io == 0) p->status = "pronto";
   return true;
-  
+
 }
 
 
@@ -65,7 +66,7 @@ bool executeProcess(Queue** q, Process** po, int queueIndex) {
 
 int main(){
 
-    //criação dos processos
+    //criaï¿½ï¿½o dos processos
     Process* processos[TOTAL_PROCESSOS];
     int i=0;
     for(i=0; i<TOTAL_PROCESSOS; i++){
@@ -73,29 +74,29 @@ int main(){
         processos[i] = processCreate(i, 0, 0, 4, 0);
     }
 
-    //criação dos tipos de filas
+    //criaï¿½ï¿½o dos tipos de filas
     enum tiposFilas{altaPrioridade, baixaPrioridade, disco, fita, impressora};
-    
+
     Queue* filas[5];
 
     for(i=altaPrioridade;i<=impressora;i++){
     	// Process** procs, int size
         filas[i] = queueCreate(NULL,0);
     }
-    
+
     //Simulation - scheduler
     do{
-	
+
 	    bool executed = false;
-	    
+
 	    for(i = 0; i < TOTAL_PROCESSOS; i++){
 	    	if(processos[i]->arrivalTime > t-QUANTUM && processos[i]->arrivalTime <= t){
 	    		bool a = addProcessInQueue(filas[processos[i]->priority], processos[i]);
 			}
 		}
-		
-		
-		//ainda não avaliado
+
+
+		//ainda nï¿½o avaliado
 		for(i=altaPrioridade;i<=impressora;i++){
 	      if(filas[i]->size == 0) continue;
 	      executed = executeProcess(filas,processos,i);
@@ -104,8 +105,8 @@ int main(){
 	    if(executed == false) {
 	      executed = executeProcess(filas,processos,-1);
 	    }
-	    
+
 	}while(processLeft(filas));
-    
+
     return 0;
 }
