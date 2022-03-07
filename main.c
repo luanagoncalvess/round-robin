@@ -66,7 +66,7 @@ bool executeProcess(Queue** q, Process** po, int queueIndex) {
 
 int main(){
 
-    //cria��o dos processos
+    //criação dos processos
     Process* processos[TOTAL_PROCESSOS];
     int i=0;
     for(i=0; i<TOTAL_PROCESSOS; i++){
@@ -74,17 +74,18 @@ int main(){
         processos[i] = processCreate(i, 0, 0, 4, 0);
     }
 
-    //cria��o dos tipos de filas
+    //criação dos tipos de filas
     enum tiposFilas{altaPrioridade, baixaPrioridade, disco, fita, impressora};
 
     Queue* filas[5];
 
     for(i=altaPrioridade;i<=impressora;i++){
-    	// Process** procs, int size
+    	// teste
+      //Process** procs, int size
         filas[i] = queueCreate(NULL,0);
     }
 
-    //Simulation - scheduler
+    // Simulação
     do{
 
 	    bool executed = false;
@@ -95,8 +96,6 @@ int main(){
 			}
 		}
 
-
-		//ainda n�o avaliado
 		for(i=altaPrioridade;i<=impressora;i++){
 	      if(filas[i]->size == 0) continue;
 	      executed = executeProcess(filas,processos,i);
